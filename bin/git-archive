@@ -1,0 +1,75 @@
+#!/bin/bash
+myname=$(basename $0)
+branch="$1"
+prefix="${2:-done}"
+if [[ -z $branch ]]; then
+  echo ""
+  echo "Usage: $myname <branch> [<prefix>]"
+  echo ""
+  echo "Archive branch <branch> in the local repo and in its upstream repo"
+  echo "(if it has one), by creating a tag named 'archive/<prefix>_<branch>'"
+  echo "and by removing the branch. The upstream repo and the branch name in"
+  echo "the upstream repo are determined automatically."
+  echo "The default for <prefix> is 'done'."
+  echo ""
+  echo "Example:"
+  echo ""
+  echo "  $myname topic1"
+  echo ""
+  echo "    If topic1 exists in local repo, this will create tag"
+  echo "    'archive/done_topic1' on the commit referenced by branch 'topic1'"
+  echo "    and will then delete branch label 'topic1' in the local repo."
+  echo ""
+  echo "    Then, if branch 'topic1' has an upstream defined (say, 'mytopic1' on"
+  echo "    remote 'myfork'), the new tag (actually, all tags) will be pushed"
+  echo "    to remote 'myfork' and branch label 'mytopic1' will be deleted on"
+  echo "    remote 'myfork'."
+  echo ""
+  exit 2
+fi
+
+branch_exists=$(git branch --list ${branch})
+upstream_remote=$(git config -l |grep "^branch\.${branch}\.remote" |cut -d "=" -f 2)
+upstream_branch=$(git config -l |grep "^branch\.${branch}\.merge" |cut -d "=" -f 2 |sed -e 's/refs\/heads\/\(.\+\)/\1/')
+
+if [[ -z $branch_exists ]]; then
+  echo "Error: Branch does not exist in local repo: $branch"
+  exit 1
+fi
+
+if [[ -n $branch_exists ]]; then
+  echo "Archiving branch $branch in local repo."
+  cmd="git tag archive/${prefix}_$branch $branch"
+  $cmd
+  rc=$?
+  if [[ $rc != 0 ]]; then
+    echo "Error: git returns rc=$rc for: $cmd"
+    exit 1
+  fi
+  cmd="git branch -d $branch"
+  $cmd
+  rc=$?
+  if [[ $rc != 0 ]]; then
+    echo "Error: git returns rc=$rc for: $cmd"
+    exit 1
+  fi
+fi
+
+if [[ -n $upstream_remote ]]; then
+  echo "Archiving branch $upstream_branch in upstream repo ${upstream_remote}."
+  cmd="git push --tags $upstream_remote"
+  $cmd
+  rc=$?
+  if [[ $rc != 0 ]]; then
+    echo "Error: git returns rc=$rc for: $cmd"
+    exit 1
+  fi
+  cmd="git push $upstream_remote :$upstream_branch"
+  $cmd
+  rc=$?
+  if [[ $rc != 0 ]]; then
+    echo "Error: git returns rc=$rc for: $cmd"
+    exit 1
+  fi
+fi
+
