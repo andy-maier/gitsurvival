@@ -36,7 +36,8 @@ repo.
 Setting up
 ----------
 
-1. Clone the original repo locally:
+1. Clone the original repo
+   locally:
 
        $ git clone {github-original-repo-url} {workdir}
        $ cd {workdir}
@@ -46,11 +47,13 @@ Setting up
    a new repo, because that establishes a relationship between these repos on
    GitHub.
 
-3. Create a remote for the forked repo (in the local repo):
+3. Create a remote for the forked repo (in the local
+   repo):
 
        $ git remote add myfork {github-forked-repo-url}
 
-4. Show the remotes and branches (just to check):
+4. Show the remotes and branches (just to
+   check):
 
        $ git remote -v
        myfork {github-forked-repo-url} (fetch)
@@ -100,7 +103,8 @@ morning), but most importantly before publishing any branches.
 
 This assumes that the work area is clean (i.e. committed).
 
-1. Update the remote branches from the original repo:
+1. Update the remote branches from the original
+   repo:
 
        $ git fetch origin
 
@@ -178,7 +182,8 @@ Publishing a branch to the forked repo
 
        # If conflicts are reported: resolve, commit, resume the rebase
 
-3. Optional: Squash the multiple commits of the branch into one commit:
+3. Optional: Squash the multiple commits of the branch into one
+   commit:
 
        $ git rebase -i
 
@@ -199,7 +204,8 @@ Publishing a branch to the forked repo
    The single commits that previously existed in the branch, are now gone. So
    use squashing only the single commits are not expected to be used anymore.
 
-4. Publish the branch to the forked repo:
+4. Publish the branch to the forked
+   repo:
 
        $ git push myfork HEAD:{new-branch}
 
@@ -223,7 +229,8 @@ clone or a fork of someone else you are not aware of. The assumption though is
 that your GitHub repo fork is exclusively worked by you, particularly as far
 as the topic branches are concerned.
 
-1. Tag the branch in the local repo:
+1. Tag the branch in the local
+   repo:
 
        $ git tag {tag} {branch}
 
@@ -235,14 +242,17 @@ as the topic branches are concerned.
 
        archive/rejected_{branch}
 
-2. Propagate the tag to the forked repo:
+2. Propagate the tag to the forked
+   repo:
 
        $ git push --tags myfork
 
-3. Remove the branch label in the local repo:
+3. Remove the branch label in the local
+   repo:
 
        $ git branch -d {branch}
 
-4. Remove the branch label in the forked repo:
+4. Remove the branch label in the forked
+   repo:
 
        $ git push {remote} :{branch}
