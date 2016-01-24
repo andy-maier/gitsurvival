@@ -136,7 +136,7 @@ This assumes that the work area is clean (i.e. committed).
 
    This is easily done by calling:
    
-       $ git mergetool
+        $ git mergetool
        
    This will open the preferred merge tool (set up in the Git configuration)
    for each file to be changed, one after the other and when the files are
@@ -145,14 +145,14 @@ This assumes that the work area is clean (i.e. committed).
 
    Once you are finished with this "merging" you can call:
    
-       $ git rebase --continue
+        $ git rebase --continue
        
    to resume rebase and Git will commit your changes with the commit message
    that lead to the "conflict".
    
    You can leave the "rebase" mode anytime by:
    
-       $ git rebase --abort
+        $ git rebase --abort
        
    which will reset the changes to the state before the rebase started.
 
