@@ -407,6 +407,8 @@ into a particular branch. That can lead to merge conflicts.
 
       $ git push -u {remote} HEAD:{branch}
 
+  x
+
 * Push the current branch to its upstream branch, merging it there:
 
       $ git push
