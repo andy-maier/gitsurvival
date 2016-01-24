@@ -39,8 +39,8 @@ Setting up
 1. Clone the original repo
    locally:
 
-       $ git clone {github-original-repo-url} {workdir}
-       $ cd {workdir}
+        $ git clone {github-original-repo-url} {workdir}
+        $ cd {workdir}
 
 2. Fork the GitHub repo using the GitHub web interface. It is important to
    create the forked repo this way, instead of pushing the local repo up into
@@ -50,25 +50,25 @@ Setting up
 3. Create a remote for the forked repo (in the local
    repo):
 
-       $ git remote add myfork {github-forked-repo-url}
+        $ git remote add myfork {github-forked-repo-url}
 
 4. Show the remotes and branches (just to
    check):
 
-       $ git remote -v
-       myfork {github-forked-repo-url} (fetch)
-       myfork {github-forked-repo-url} (push)
-       origin {github-original-repo-url} (fetch)
-       origin {github-original-repo-url} (push)
+        $ git remote -v
+        myfork {github-forked-repo-url} (fetch)
+        myfork {github-forked-repo-url} (push)
+        origin {github-original-repo-url} (fetch)
+        origin {github-original-repo-url} (push)
 
-       $ git branch -a
-       * master
-         remotes/origin/HEAD -> origin/master
-         remotes/origin/master
+        $ git branch -a
+        * master
+          remotes/origin/HEAD -> origin/master
+          remotes/origin/master
 
-       $ git config -l |grep "^branch\."
-       branch.master.remote=origin
-       branch.master.merge=refs/heads/master
+        $ git config -l |grep "^branch\."
+        branch.master.remote=origin
+        branch.master.merge=refs/heads/master
 
 Creating a topic branch
 -----------------------
@@ -106,7 +106,7 @@ This assumes that the work area is clean (i.e. committed).
 1. Update the remote branches from the original
    repo:
 
-       $ git fetch origin
+        $ git fetch origin
 
    This propagates any missing commits from the "master" branch in the
    original repo to the remote-tracking branch "origin/master" in the local
@@ -115,7 +115,7 @@ This assumes that the work area is clean (i.e. committed).
 2. Rebase any local changes in the currently checked out branch to latest
    level of "origin/master"
 
-       $ git rebase
+        $ git rebase
 
    It is important to use "rebase" instead of "merge" (or even "pull"),
    because we want to base our changes on the most recent changes in the
@@ -127,7 +127,7 @@ This assumes that the work area is clean (i.e. committed).
    **[TBD: I think I had a case where this did not update the current branch.
    The suspicion is that that branch was not a tracking branch. Verify.]**
 
-AM: default for rebase is to rebase against the upstream branch
+   AM: default for rebase is to rebase against the upstream branch
 
 3. If the "rebase" reports conflicts, resolve them by editing the
    corresponding files, commit the result (to the checked out branch), and
@@ -177,26 +177,26 @@ Publishing a branch to the forked repo
    up, in order to reduce the chance for conflicts in the merge request that
    is being created:
 
-       $ git fetch origin
-       $ git rebase
+        $ git fetch origin
+        $ git rebase
 
-       # If conflicts are reported: resolve, commit, resume the rebase
+   If conflicts are reported: resolve, commit, resume the rebase
 
 3. Optional: Squash the multiple commits of the branch into one
    commit:
 
-       $ git rebase -i
+        $ git rebase -i
 
-       # In the editor that comes up, change the "pick" commands of the second
-       # commit and of any following commits to "squash".
+   In the editor that comes up, change the "pick" commands of the second
+   commit and of any following commits to "squash".
 
-       # The resulting commit message can be edited in a second invocation of
-       # the editor.
+   The resulting commit message can be edited in a second invocation of
+   the editor.
 
    The commit log for branch {new-branch} now shows only one commit on top
    of the last commit from "origin/master", with a commit message as edited.
 
-       $ git log      # The checked out branch is shown by default
+        $ git log      # The checked out branch is shown by default
 
    The squashing results in a change to the local repo only, the remote
    repo is changed only afterwards when the branch is pushed.
@@ -207,7 +207,7 @@ Publishing a branch to the forked repo
 4. Publish the branch to the forked
    repo:
 
-       $ git push myfork HEAD:{new-branch}
+        $ git push myfork HEAD:{new-branch}
 
    This creates branch {new-branch} in the forked repo, and makes branch
    {new-branch} in the local repo a remote-tracking branch.
@@ -232,27 +232,27 @@ as the topic branches are concerned.
 1. Tag the branch in the local
    repo:
 
-       $ git tag {tag} {branch}
+        $ git tag {tag} {branch}
 
    where for merged branches, `{tag}` is:
 
-       archive/done_{branch}
+        archive/done_{branch}
    
    and for rejected branches, `{tag}` is:
 
-       archive/rejected_{branch}
+        archive/rejected_{branch}
 
 2. Propagate the tag to the forked
    repo:
 
-       $ git push --tags myfork
+        $ git push --tags myfork
 
 3. Remove the branch label in the local
    repo:
 
-       $ git branch -d {branch}
+        $ git branch -d {branch}
 
 4. Remove the branch label in the forked
    repo:
 
-       $ git push {remote} :{branch}
+        $ git push {remote} :{branch}
