@@ -407,21 +407,22 @@ into a particular branch. That can lead to merge conflicts.
 
       $ git push -u {remote} HEAD:{branch}
 
-  x
-
-* Push the current branch to its upstream branch, merging it there:
+* Push the current branch to its upstream branch, merging it
+  there:
 
       $ git push
 
   Note that this does not push any tags.
 
-* To push tags in the local repo to a particular remote repo:
+* To push tags in the local repo to a particular remote
+  repo:
 
       $ git push --tags {remote}
 
   This pushes all changes on tags, i.e. additions and deletions.
 
-* To delete a branch in a remote repository:
+* To delete a branch in a remote
+  repository:
 
       $ git push {remote} :{branch}
 
