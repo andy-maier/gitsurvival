@@ -10,9 +10,11 @@ License: Public domain.
 
 Scripts:
 
-* `git-archive` - Archive a branch in local repo and its upstream repo.
+* [`git-archive`](bin/git-archive) - Archive a branch in local repo and its upstream repo.
 
 Guides:
 
-* TODO
-
+* [Git Concepts](guides/git-concepts.md)
+* [Git Tips and Tricks](guides/git-tips+tricks.md)
+* [Git workflow directly with original repo](guides/git-workflow-direct.md)
+* [Git workflow with GitHub fork](guides/git-workflow-github-fork.md)
