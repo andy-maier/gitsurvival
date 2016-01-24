@@ -414,10 +414,9 @@ into a particular branch. That can lead to merge conflicts.
 
   Note that this does not push any tags.
 
-* To push tags in the local repo to a particular remote
-  repo:
+* To push tags in the local repo to a particular remote repo:
 
-      $ git push --tags {remote}
+        $ git push --tags {remote}
 
   This pushes all changes on tags, i.e. additions and deletions.
 
