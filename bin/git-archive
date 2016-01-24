@@ -28,7 +28,7 @@ if [[ -z $branch ]]; then
   exit 2
 fi
 
-branch_exists=$(git branch --list ${branch})
+branch_exists=$(git branch |cut -c 3- |grep "^${branch}$")
 upstream_remote=$(git config -l |grep "^branch\.${branch}\.remote" |cut -d "=" -f 2)
 upstream_branch=$(git config -l |grep "^branch\.${branch}\.merge" |cut -d "=" -f 2 |sed -e 's/refs\/heads\/\(.\+\)/\1/')
 
