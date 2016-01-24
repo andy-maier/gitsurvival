@@ -120,10 +120,13 @@ without a need to change what is currently checked out:
 
     $ git log {branch}
 
-This command lists the chain of commits between of the chain l
-The tree structure of the local repo can be shown with a number of more
-elaborated commands. For example, 
+This command lists the chain of commits between a branch and a branch on one of
+its child commits:
 
+    $ git log {branch}..{child-branch}
+
+The tree structure of the local repo can be shown with a number of more
+elaborated commands. **TODO: Add commands**
 
 Remotes
 -------
@@ -179,7 +182,7 @@ these variables.
 
 Some examples of repository URLs ({remote-url}):
 
-- SSH-based URL for GitHub. Most remote Git sites allow a public key to be
+* SSH-based URL for GitHub. Most remote Git sites allow a public key to be
   uploaded in order to avoid having to enter userid and password on every
   command that works with the remote repository. That only works with
   SSH-based URLs:
@@ -192,7 +195,7 @@ Some examples of repository URLs ({remote-url}):
       git@github.com/{user-id}/{project}.git
       git@github.com/{org-id}/{project}.git
 
-- SSH-based URL for a privately hosted repository, again with public key
+* SSH-based URL for a privately hosted repository, again with public key
   stored:
 
       ssh://git@inovadevelopment.com:8026/home/git/cmpi_headers_2_1_work
@@ -201,7 +204,8 @@ Some examples of repository URLs ({remote-url}):
 
       git@inovadevelopment.com:8026/home/git/cmpi_headers_2_1_work
 
-- file system based URLs
+* File system based
+  URLs:
 
       /data/mygits/work/my.git
 
@@ -414,9 +418,10 @@ into a particular branch. That can lead to merge conflicts.
 
   Note that this does not push any tags.
 
-* To push tags in the local repo to a particular remote repo:
+* To push tags in the local repo to a particular remote
+  repo:
 
-        $ git push --tags {remote}
+      $ git push --tags {remote}
 
   This pushes all changes on tags, i.e. additions and deletions.
 
