@@ -1,8 +1,11 @@
 #!/bin/bash
+myversion="1.0.0"
 myname=$(basename $0)
 branch="$1"
 prefix="${2:-done}"
 if [[ -z $branch ]]; then
+  echo ""
+  echo "$myname Version $myversion - Archive a Git branch."
   echo ""
   echo "Usage: $myname <branch> [<prefix>]"
   echo ""
@@ -29,6 +32,7 @@ if [[ -z $branch ]]; then
 fi
 
 branch_exists=$(git branch |cut -c 3- |grep "^${branch}$")
+current_branch=$(git status |grep "^On branch" | cut -d ' ' -f 3)
 upstream_remote=$(git config -l |grep "^branch\.${branch}\.remote" |cut -d "=" -f 2)
 upstream_branch=$(git config -l |grep "^branch\.${branch}\.merge" |cut -d "=" -f 2 |sed -e 's/refs\/heads\/\(.\+\)/\1/')
 
@@ -37,9 +41,20 @@ if [[ -z $branch_exists ]]; then
   exit 1
 fi
 
+if [[ -z $current_branch ]]; then
+  echo "Error: Cannot determine current branch from 'git status'"
+  exit 1
+fi
+
+if [[ $branch == $current_branch ]]; then
+  echo "Error: Current branch cannot be archived: $branch"
+  exit 1
+fi
+
 if [[ -n $branch_exists ]]; then
   echo "Archiving branch $branch in local repo."
   cmd="git tag archive/${prefix}_$branch $branch"
+  echo $cmd
   $cmd
   rc=$?
   if [[ $rc != 0 ]]; then
@@ -47,6 +62,7 @@ if [[ -n $branch_exists ]]; then
     exit 1
   fi
   cmd="git branch -d $branch"
+  echo $cmd
   $cmd
   rc=$?
   if [[ $rc != 0 ]]; then
@@ -58,6 +74,7 @@ fi
 if [[ -n $upstream_remote ]]; then
   echo "Archiving branch $upstream_branch in upstream repo ${upstream_remote}."
   cmd="git push --tags $upstream_remote"
+  echo $cmd
   $cmd
   rc=$?
   if [[ $rc != 0 ]]; then
@@ -65,6 +82,7 @@ if [[ -n $upstream_remote ]]; then
     exit 1
   fi
   cmd="git push $upstream_remote :$upstream_branch"
+  echo $cmd
   $cmd
   rc=$?
   if [[ $rc != 0 ]]; then
