@@ -1,0 +1,83 @@
+#!/bin/bash
+
+myversion="1.0.0"
+myname=$(basename $0)
+mp="${myname}:"
+
+remote="$1"
+
+if [[ -z $remote ]]; then
+  echo ""
+  echo "$myname Version $myversion - Delete prunable Git branches in local repo."
+  echo ""
+  echo "Usage: $myname <upstream>"
+  echo ""
+  echo "Find out which branches for the specified upstream remote are eligible"
+  echo "for pruning, and for each of them:"
+  echo "* Delete the corresponding remote branch in the local repo"
+  echo "* Delete the corresponding local branch"
+  echo ""
+  echo "Example:"
+  echo ""
+  echo "  $myname origin"
+  echo ""
+  exit 2
+fi
+
+remote_exists=$(git remote |grep "^${remote}$")
+current_branch=$(git status |grep -E "^(# *)?On branch" | sed -e 's/.* branch \(.\+\)/\1/')
+
+if [[ -z $remote_exists ]]; then
+  echo $mp "Error: Remote does not exist in this repo: $remote"
+  echo $mp "       Existing remotes configured in this repo: $(git remote)"
+  exit 1
+fi
+
+if [[ $(echo $current_branch | wc -w) != 1 ]]; then
+  echo $mp "Error: Cannot determine current branch in this repo"
+  echo $mp "       Git status parsing yields: current_branch=${current_branch}"
+  exit 1
+fi
+
+prunable_branches=$(git remote show $remote \
+                    | grep -E "use .git remote prune. to remove" \
+                    | sed -e "s! *refs/remotes/${remote}/\([^ ]\+\) .*!\1 !g")
+
+#echo "Debug: prunable_branches=<${prunable_branches}>"
+
+if [[ -n $prunable_branches ]]; then
+
+  for branch in $prunable_branches; do
+    if [[ $branch == $current_branch ]]; then
+      echo $mp "Error: Cannot prune branch that is checked out: $branch"
+      exit 1
+    fi
+  done
+
+  for branch in $prunable_branches; do
+
+    echo $mp "Pruning branch: $branch"
+
+    cmd="git branch -d $branch"
+    echo $cmd
+    $cmd
+    rc=$?
+    if [[ $rc != 0 ]]; then
+      echo $mp "Warning: git returns rc=$rc for: $cmd"
+      exit 1
+    fi
+
+    cmd="git branch -d -r $remote/$branch"
+    echo $cmd
+    $cmd
+    rc=$?
+    if [[ $rc != 0 ]]; then
+      echo $mp "Warning: git returns rc=$rc for: $cmd"
+      exit 1
+    fi
+
+  done
+
+else
+  echo $mp "No branches eligible for pruning"
+fi
