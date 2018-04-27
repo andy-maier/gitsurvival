@@ -1,6 +1,6 @@
 #!/bin/bash
 
-myversion="1.0.1"
+myversion="1.0.2"
 myname=$(basename $0)
 mp="${myname}:"
 
@@ -25,7 +25,7 @@ if [[ -z $remote ]]; then
 fi
 
 remote_exists=$(git remote |grep "^${remote}$")
-current_branch=$(git status |grep -E "^(# *)?On branch" | sed -e 's/.* branch \(.\+\)/\1/')
+current_branch=$(git status |grep -E "^(# *)?On branch" |cut -d ' ' -f 3)
 
 if [[ -z $remote_exists ]]; then
   echo $mp "Error: Remote does not exist in this repo: $remote"
@@ -33,7 +33,7 @@ if [[ -z $remote_exists ]]; then
   exit 1
 fi
 
-if [[ $(echo $current_branch | wc -w) != 1 ]]; then
+if [[ $(echo $current_branch | wc -w) -ne 1 ]]; then
   echo $mp "Error: Cannot determine current branch in this repo"
   echo $mp "       Git status parsing yields: current_branch=${current_branch}"
   exit 1
@@ -41,7 +41,7 @@ fi
 
 prunable_branches=$(git remote show $remote \
                     | grep -E "use .git remote prune. to remove" \
-                    | sed -e "s! *refs/remotes/${remote}/\([^ ]\+\) .*!\1 !g")
+                    | sed -e "s/ *refs\/remotes\/$remote\/\\([^ ]*\\) .*/\\1 /g")
 local_branches=$(git branch --no-color |cut -c 3- |cut -d ' ' -f 1)
 remote_branches=$(git branch -r --no-color |cut -c 3- |cut -d ' ' -f 1)
 
