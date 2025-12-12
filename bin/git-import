@@ -1,0 +1,61 @@
+#!/bin/bash
+
+myversion="1.0.0"
+myname=$(basename $0)
+mp="${myname}:"
+
+bundle_file="$1"
+
+if [[ -z $bundle_file ]]; then
+  echo ""
+  echo "$myname Version $myversion - Import commits from a git bundle file into the current repo."
+  echo ""
+  echo "This script only fetches the commits from the bundle file. The user then needs"
+  echo "to cherry-pick these commits."
+  echo ""
+  echo "Usage: $myname <bundle-file>"
+  echo ""
+  echo "Where:"
+  echo "  <bundle-file>   Path name of git bundle file that is used."
+  echo ""
+  echo "Example:"
+  echo ""
+  echo "  $myname my.bundle"
+  echo ""
+  exit 2
+fi
+
+# Make sure relative path names begin with './'. That is needed for git fetch
+# to recognize this as a file.
+[[ "$bundle_file" = /* || "$bundle_file" = ./* ]] || bundle_file="./$bundle_file"
+
+tag=tmp_gitexport_$(basename $bundle_file)
+
+echo ""
+echo $mp "Fetching commits from bundle file $bundle_file"
+cmd="git fetch $bundle_file refs/tags/$tag"
+echo $cmd
+$cmd
+rc=$?
+if [[ $rc != 0 ]]; then
+  echo $mp "Error: Cannot fetch from bundle file $bundle_file with tag $tag"
+  exit 1
+fi
+
+num_commits=10
+
+echo ""
+echo $mp "Listing the last $num_commits commits from HEAD (current checkout)"
+cmd="git log --oneline --decorate HEAD~$num_commits..HEAD"
+echo $cmd
+$cmd
+
+echo ""
+echo $mp "Listing the last $num_commits commits from FETCH_HEAD (bundle file)"
+cmd="git log --oneline --decorate FETCH_HEAD~$num_commits..FETCH_HEAD"
+echo $cmd
+$cmd
+
+echo ""
+echo $mp "Now you need to cherry-pick the commits you want to have. Make sure you have created a topic branch."
+echo ""

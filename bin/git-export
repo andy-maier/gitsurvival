@@ -1,0 +1,93 @@
+#!/bin/bash
+
+myversion="1.0.0"
+myname=$(basename $0)
+mp="${myname}:"
+
+bundle_file="$1"
+commit_spec="$2"
+
+if [[ -z $commit_spec ]]; then
+  echo ""
+  echo "$myname Version $myversion - Export commits from the current repo as a git bundle for import into a different repo."
+  echo ""
+  echo "Using this approach, renames of files between the source and target repo are handled correctly."
+  echo ""
+  echo "The import of the bundle file into the target repo can be done with the git-import command. That command"
+  echo "fetches the commits from the bundle file so that you can cherry-pick them."
+  echo ""
+  echo "A temporary git tag is created and cleaned up again. The temporary tag name is tmp_gitexport_<bundle>"
+  echo "where <bundle> is the basename of the bundle file."
+  echo ""
+  echo "Usage: $myname <bundle-file> <commit-spec>"
+  echo ""
+  echo "Where:"
+  echo "  <bundle-file>   Path name of git bundle file that is created. An existing bundle file will be replaced."
+  echo "  <commit-spec>   Defines the commit which - including its complete ancestry - is put into the bundle file."
+  echo "                  Can be specified using commit hashes, branch names, or tag names. If a commit range is "
+  echo "                  specified, the end of the range is used as the commit. See the examples below."
+  echo ""
+  echo "Examples:"
+  echo ""
+  echo "  $myname my.bundle mybranch - The commit at branch 'mybranch' and its complete commit ancestry"
+  echo "  $myname my.bundle mybranch1..mybranch2 - The commit at branch 'mybranch2' and its complete commit ancestry"
+  echo "  $myname my.bundle mytag - The commit at tag 'mytag' and its complete commit ancestry"
+  echo "  $myname my.bundle 1234567 - The commit 1234567 and its complete commit ancestry"
+  echo ""
+  exit 2
+fi
+
+tag=tmp_gitexport_$(basename $bundle_file)
+
+if [[ -n $(git tag --list $tag) ]]; then
+  echo $mp "Deleting temporary tag $tag"
+  git tag -d $tag
+  rc=$?
+  if [[ $rc != 0 ]]; then
+    echo $mp "Error: Cannot delete temporary tag $tag"
+    exit 1
+  fi
+fi
+
+if [[ "$commit_spec" == *".."* ]]; then
+    tip="${commit_spec##*..}"
+else
+    tip="$commit_spec"
+fi
+
+echo ""
+echo $mp "Creating temporary tag $tag on commit $tip"
+cmd="git tag $tag $tip"
+echo $cmd
+$cmd
+rc=$?
+if [[ $rc != 0 ]]; then
+  echo $mp "Error: Cannot create tag $tag on commit $tip"
+  exit 1
+fi
+
+echo ""
+echo $mp "Creating bundle file $bundle_file using tag $tag"
+cmd="git bundle create $bundle_file refs/tags/$tag"
+echo $cmd
+$cmd
+rc=$?
+if [[ $rc != 0 ]]; then
+  echo $mp "Error: Cannot create bundle file $bundle_file using tag $tag"
+  exit 1
+fi
+
+echo ""
+echo $mp "Deleting temporary tag $tag"
+cmd="git tag -d $tag"
+echo $cmd
+$cmd
+rc=$?
+if [[ $rc != 0 ]]; then
+  echo $mp "Error: Cannot delete temporary tag $tag"
+  exit 1
+fi
+
+echo ""
+echo $mp "Success: Created bundle file $bundle_file with tag $tag on commit $tip"
+echo ""

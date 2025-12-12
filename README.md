@@ -11,6 +11,8 @@ License: Public domain.
 Scripts:
 
 * [`git-archive`](bin/git-archive) - Archive a branch in local repo and its upstream repo.
+* [`git-export`](bin/git-export) - Export a branch as a git bundle. Supports transfer between repos with renames.
+* [`git-import`](bin/git-import) - Import a git bundle to prepare for cherry-picking.
 
 Guides:
 
